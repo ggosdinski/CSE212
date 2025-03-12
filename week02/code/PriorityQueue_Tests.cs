@@ -1,29 +1,67 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-// TODO Problem 2 - Write and run test cases and fix the code to match requirements.
+using System;
 
 [TestClass]
 public class PriorityQueueTests
 {
     [TestMethod]
-    // Scenario: 
-    // Expected Result: 
-    // Defect(s) Found: 
-    public void TestPriorityQueue_1()
+    // Scenario: Add multiple items and remove the highest priority one
+    // Expected Result: The item with the highest priority is dequeued first (FIFO for ties)
+    // Defect(s) Found: None
+    public void TestPriorityQueue_HighestPriorityRemoved()
     {
         var priorityQueue = new PriorityQueue();
-        Assert.Fail("Implement the test case and then remove this.");
+        priorityQueue.Enqueue("LowPriority", 1);
+        priorityQueue.Enqueue("HighPriority", 5);
+        priorityQueue.Enqueue("MediumPriority", 3);
+
+        string result = priorityQueue.Dequeue();
+        Assert.AreEqual("HighPriority", result);
     }
 
     [TestMethod]
-    // Scenario: 
-    // Expected Result: 
-    // Defect(s) Found: 
-    public void TestPriorityQueue_2()
+    // Scenario: Remove items when multiple have the same highest priority
+    // Expected Result: The first inserted item with the highest priority is removed (FIFO)
+    // Defect(s) Found: None
+    public void TestPriorityQueue_FIFO_TieBreaker()
     {
         var priorityQueue = new PriorityQueue();
-        Assert.Fail("Implement the test case and then remove this.");
+        priorityQueue.Enqueue("FirstHigh", 5);
+        priorityQueue.Enqueue("SecondHigh", 5);
+        priorityQueue.Enqueue("LowPriority", 1);
+
+        string result1 = priorityQueue.Dequeue();
+        string result2 = priorityQueue.Dequeue();
+
+        Assert.AreEqual("FirstHigh", result1);
+        Assert.AreEqual("SecondHigh", result2);
     }
 
-    // Add more test cases as needed below.
+    [TestMethod]
+    // Scenario: Remove items in correct priority order
+    // Expected Result: Items should be dequeued in order of priority, maintaining FIFO for ties
+    // Defect(s) Found: None
+    public void TestPriorityQueue_CorrectOrder()
+    {
+        var priorityQueue = new PriorityQueue();
+        priorityQueue.Enqueue("A", 2);
+        priorityQueue.Enqueue("B", 3);
+        priorityQueue.Enqueue("C", 1);
+        priorityQueue.Enqueue("D", 3);
+
+        Assert.AreEqual("B", priorityQueue.Dequeue());
+        Assert.AreEqual("D", priorityQueue.Dequeue());
+        Assert.AreEqual("A", priorityQueue.Dequeue());
+        Assert.AreEqual("C", priorityQueue.Dequeue());
+    }
+
+    [TestMethod]
+    // Scenario: Dequeue from an empty queue
+    // Expected Result: Exception is thrown
+    // Defect(s) Found: None
+    public void TestPriorityQueue_EmptyQueueException()
+    {
+        var priorityQueue = new PriorityQueue();
+        Assert.ThrowsException<InvalidOperationException>(() => priorityQueue.Dequeue());
+    }
 }
