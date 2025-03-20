@@ -22,7 +22,22 @@ public static class SetsAndMaps
     public static string[] FindPairs(string[] words)
     {
         // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+        HashSet<string> wordSet = new HashSet<string>(words); // O(n) tiempo y espacio
+        List<string> result = new List<string>();
+
+        foreach (string word in words)
+        {
+            string reversed = new string(new char[] { word[1], word[0] });
+
+            if (wordSet.Contains(reversed) && word != reversed) // O(1) búsqueda en set
+            {
+                result.Add($"{word} & {reversed}");
+                wordSet.Remove(word);     // O(1) eliminación
+                wordSet.Remove(reversed); // Eliminamos la inversa también
+            }
+        }
+
+        return result.ToArray();
     }
 
     /// <summary>
@@ -41,8 +56,22 @@ public static class SetsAndMaps
         var degrees = new Dictionary<string, int>();
         foreach (var line in File.ReadLines(filename))
         {
-            var fields = line.Split(",");
-            // TODO Problem 2 - ADD YOUR CODE HERE
+            var fields = line.Split(','); // Separa la línea por comas
+
+            if (fields.Length < 4) continue; // Asegurar que hay al menos 4 columnas
+
+            string degree = fields[3].Trim(); // Obtiene la columna 4 y elimina espacios extras
+
+            if (degree == "") continue; // Ignorar líneas vacías
+
+            if (degrees.ContainsKey(degree))
+            {
+                degrees[degree]++; // Si el título ya existe, aumenta el contador
+            }
+            else
+            {
+                degrees[degree] = 1; // Si no existe, agrégalo con valor 1
+            }
         }
 
         return degrees;
@@ -66,24 +95,42 @@ public static class SetsAndMaps
     /// </summary>
     public static bool IsAnagram(string word1, string word2)
     {
-        // TODO Problem 3 - ADD YOUR CODE HERE
-        return false;
+        // 1. Convertir todo a minúsculas y eliminar espacios
+        word1 = word1.ToLower().Replace(" ", "");
+        word2 = word2.ToLower().Replace(" ", "");
+
+        // 2. Si las palabras no tienen la misma longitud, no pueden ser anagramas
+        if (word1.Length != word2.Length)
+        {
+            return false;
+        }
+
+        // 3. Crear diccionarios para contar la frecuencia de cada letra
+        Dictionary<char, int> count1 = new Dictionary<char, int>();
+        Dictionary<char, int> count2 = new Dictionary<char, int>();
+
+        // 4. Contar las letras de la primera palabra
+        foreach (char c in word1)
+        {
+            if (count1.ContainsKey(c))
+                count1[c]++;
+            else
+                count1[c] = 1;
+        }
+
+        // 5. Contar las letras de la segunda palabra
+        foreach (char c in word2)
+        {
+            if (count2.ContainsKey(c))
+                count2[c]++;
+            else
+                count2[c] = 1;
+        }
+
+        // 6. Comparar los diccionarios
+        return count1.Count == count2.Count && count1.All(kv => count2.ContainsKey(kv.Key) && count2[kv.Key] == kv.Value);
     }
 
-    /// <summary>
-    /// This function will read JSON (Javascript Object Notation) data from the 
-    /// United States Geological Service (USGS) consisting of earthquake data.
-    /// The data will include all earthquakes in the current day.
-    /// 
-    /// JSON data is organized into a dictionary. After reading the data using
-    /// the built-in HTTP client library, this function will return a list of all
-    /// earthquake locations ('place' attribute) and magnitudes ('mag' attribute).
-    /// Additional information about the format of the JSON data can be found 
-    /// at this website:  
-    /// 
-    /// https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php
-    /// 
-    /// </summary>
     public static string[] EarthquakeDailySummary()
     {
         const string uri = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
