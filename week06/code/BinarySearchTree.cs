@@ -1,50 +1,29 @@
 using System.Collections;
+using System.Collections.Generic;
 
 public class BinarySearchTree : IEnumerable<int>
 {
     private Node? _root;
 
-    /// <summary>
-    /// Insert a new node in the BST.
-    /// </summary>
     public void Insert(int value)
     {
-        // Create new node
         Node newNode = new(value);
-        // If the list is empty, then point both head and tail to the new node.
         if (_root is null)
         {
             _root = newNode;
         }
-        // If the list is not empty, then only head will be affected.
         else
         {
             _root.Insert(value);
         }
     }
 
-    /// <summary>
-    /// Check to see if the tree contains a certain value
-    /// </summary>
-    /// <param name="value">The value to look for</param>
-    /// <returns>true if found, otherwise false</returns>
     public bool Contains(int value)
     {
         return _root != null && _root.Contains(value);
     }
 
-    /// <summary>
-    /// Yields all values in the tree
-    /// </summary>
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        // call the generic version of the method
-        return GetEnumerator();
-    }
-
-    /// <summary>
-    /// Iterate forward through the BST
-    /// </summary>
+    // Cambiar el tipo de retorno a IEnumerator<int>
     public IEnumerator<int> GetEnumerator()
     {
         var numbers = new List<int>();
@@ -55,6 +34,7 @@ public class BinarySearchTree : IEnumerable<int>
         }
     }
 
+    // Método privado para recorrer el árbol en orden (in-order)
     private void TraverseForward(Node? node, List<int> values)
     {
         if (node is not null)
@@ -65,10 +45,19 @@ public class BinarySearchTree : IEnumerable<int>
         }
     }
 
-    /// <summary>
-    /// Iterate backward through the BST.
-    /// </summary>
-    public IEnumerable Reverse()
+    // Recorrido inverso (de mayor a menor)
+    private void TraverseBackward(Node? node, List<int> values)
+    {
+        if (node is not null)
+        {
+            TraverseBackward(node.Right, values);  // Primero recorremos el subárbol derecho
+            values.Add(node.Data);
+            TraverseBackward(node.Left, values);   // Luego el subárbol izquierdo
+        }
+    }
+
+    // Implementar Reverse para recorrer en orden inverso
+    public IEnumerable<int> Reverse()
     {
         var numbers = new List<int>();
         TraverseBackward(_root, numbers);
@@ -78,14 +67,7 @@ public class BinarySearchTree : IEnumerable<int>
         }
     }
 
-    private void TraverseBackward(Node? node, List<int> values)
-    {
-        // TODO Problem 3
-    }
-
-    /// <summary>
-    /// Get the height of the tree
-    /// </summary>
+    // Método para obtener la altura del árbol
     public int GetHeight()
     {
         if (_root is null)
@@ -93,14 +75,15 @@ public class BinarySearchTree : IEnumerable<int>
         return _root.GetHeight();
     }
 
+    // Sobreescribir ToString para mostrar el árbol de forma legible
     public override string ToString()
     {
         return "<Bst>{" + string.Join(", ", this) + "}";
     }
-}
 
-public static class IntArrayExtensionMethods {
-    public static string AsString(this IEnumerable array) {
-        return "<IEnumerable>{" + string.Join(", ", array.Cast<int>()) + "}";
+    // Implementación del método IEnumerable.GetEnumerator() para que sea compatible
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }
